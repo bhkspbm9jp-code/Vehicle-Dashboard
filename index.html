@@ -1,138 +1,386 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vehicle Pickup Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Supabase JavaScript library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.4.1/dist/supabase.min.js"></script>
+<title>Vehicle Pickup Dashboard</title>
 
-  <!-- XLSX library for Excel import -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    /* Basic styling to match your desired layout */
-    body {
-      font-family: Arial, sans-serif;
-    }
-   .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-    }
-  </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f8;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.cards{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+.card{
+flex:1;
+background:white;
+padding:15px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.card h2{
+font-size:32px;
+margin:0;
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#f1f3f5;
+}
+
+.old{
+background:#ffe4e6;
+}
+
+input,select{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+
 </head>
+
 <body>
-  <div class="container">
-    <h1>Vehicle Pickup Dashboard</h1>
-    <p>Counts per location:</p>
-    <div id="location-counts"></div>
-    <form id="vehicle-form">
-      <label for="make">Make:</label>
-      <input type="text" id="make" name="make"><br><br>
-      <label for="model">Model:</label>
-      <input type="text" id="model" name="model"><br><br>
-      <label for="customer">Customer:</label>
-      <input type="text" id="customer" name="customer"><br><br>
-      <label for="vin">VIN:</label>
-      <input type="text" id="vin" name="vin"><br><br>
-      <label for="turn-in-date">Turn-in Date:</label>
-      <input type="date" id="turn-in-date" name="turn-in-date"><br><br>
-      <label for="location">Location:</label>
-      <input type="text" id="location" name="location"><br><br>
-      <button type="submit">Add Vehicle</button>
-    </form>
-    <table id="vehicle-table">
-      <thead>
-        <tr>
-          <th>Make</th>
-          <th>Model</th>
-          <th>Customer</th>
-          <th>VIN</th>
-          <th>Turn-in Date</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody id="vehicle-table-body">
-      </tbody>
-    </table>
-  </div>
 
-  <script>
-    // Initialize Supabase
-    const supabaseUrl = 'https://your-supabase-instance.supabase.io';
-    const supabaseKey = sb_publishable_ogg53YFtX-817uwdhSKNaw_Oi7kCoya;
-    const supabaseSecret = 'your-supabase-secret';
-    const supabase = createClient(supabaseUrl, supabaseKey, supabaseSecret);
+<div class="container">
 
-    // Get location counts
-    async function getLocations() {
-      const { data, error } = await supabase
-       .from('locations')
-       .select('count(*) as count');
-      if (error) {
-        console.error(error);
-      } else {
-        const locationCounts = data.reduce((acc, location) => {
-          acc[location.count] = location.count;
-          return acc;
-        }, {});
-        const locationCountHtml = Object.keys(locationCounts).map((count) => {
-          return `<p>Location ${count}: ${locationCounts[count]}</p>`;
-        }).join('');
-        document.getElementById('location-counts').innerHTML = locationCountHtml;
-      }
-    }
+<h1>Vehicle Pickup Dashboard</h1>
 
-    // Handle form submission
-    document.getElementById('vehicle-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = new FormData(e.target);
-      const vehicleData = Object.fromEntries(form.entries());
-      try {
-        // Insert new vehicle into Supabase
-        const { data, error } = await supabase
-         .from('vehicles')
-         .insert(vehicleData);
-        if (error) {
-          console.error(error);
-        } else {
-          // Add vehicle to table
-          const vehicleHtml = `
-            <tr>
-              <td>${vehicleData.make}</td>
-              <td>${vehicleData.model}</td>
-              <td>${vehicleData.customer}</td>
-              <td>${vehicleData.vin}</td>
-              <td>${vehicleData.turn_in_date}</td>
-              <td>${vehicleData.location}</td>
-            </tr>
-          `;
-          const tableBody = document.getElementById('vehicle-table-body');
-          tableBody.innerHTML += vehicleHtml;
-          // Update location counts
-          await getLocations();
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    });
+<div class="cards">
 
-    // Get location counts on page load
-    getLocations();
-  </script>
+<div class="card">
+Button
+<h2 id="buttonCount">0</h2>
+</div>
+
+<div class="card">
+Service
+<h2 id="buttonCount">0</h2>
+</div>
+  
+<div class="card">
+Pre-Owned
+<h2 id="preCount">0</h2>
+</div>
+
+<div class="card">
+Total Waiting
+<h2 id="totalCount">0</h2>
+</div>
+
+</div>
+
+
+<input id="search" placeholder="Search VIN..." onkeyup="render()">
+
+<br><br>
+
+<div>
+
+<input id="customer" placeholder="Customer Last Name">
+<input id="vin" placeholder="VIN">
+<input type="date" id="turnin">
+
+<select id="location">
+<option>Button</option>
+<option>Pre-Owned</option>
+<option>Service</option>
+</select>
+
+<button onclick="addVehicle()">Add</button>
+
+<input type="file" id="excel">
+<button onclick="importExcel()">Import</button>
+
+</div>
+
+<br>
+
+<button onclick="showWaiting()">Waiting</button>
+<button onclick="showPicked()">Picked Up</button>
+
+<br><br>
+
+
+<div id="waitingSection">
+
+<table id="waitingTable">
+
+<tr>
+<th>Customer</th>
+<th>VIN</th>
+<th>Turn In</th>
+<th>Location</th>
+<th>Action</th>
+</tr>
+
+</table>
+
+</div>
+
+
+<div id="pickedSection" class="hidden">
+
+<table id="pickedTable">
+
+<tr>
+<th>Customer</th>
+<th>VIN</th>
+<th>Turn In</th>
+<th>Pickup</th>
+<th>Location</th>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://bcjcdddilcjbcmpstfix.supabase.co"
+const SUPABASE_KEY = "sb_publishable_ogg53YFtX-817uwdhSKNaw_Oi7kCoya"
+
+const db = supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
+
+let vehicles=[]
+
+async function loadVehicles(){
+
+let {data} = await db.from("vehicles").select("*")
+
+vehicles=data
+
+render()
+
+}
+
+async function addVehicle(){
+
+await db.from("vehicles").insert({
+
+customer:customer.value,
+vin:vin.value,
+turnin:turnin.value,
+location:document.getElementById("location").value,
+status:"waiting"
+
+})
+
+loadVehicles()
+
+}
+
+async function markPicked(id){
+
+await db.from("vehicles")
+
+.update({
+status:"picked",
+pickup:new Date()
+})
+
+.eq("id",id)
+
+loadVehicles()
+
+}
+
+async function deleteVehicle(id){
+
+await db.from("vehicles")
+
+.delete()
+
+.eq("id",id)
+
+loadVehicles()
+
+}
+
+function render(){
+
+let waitingTable=document.getElementById("waitingTable")
+let pickedTable=document.getElementById("pickedTable")
+
+waitingTable.innerHTML=
+"<tr><th>Customer</th><th>VIN</th><th>Turn In</th><th>Location</th><th>Action</th></tr>"
+
+pickedTable.innerHTML=
+"<tr><th>Customer</th><th>VIN</th><th>Turn In</th><th>Pickup</th><th>Location</th></tr>"
+
+let searchTerm=search.value.toLowerCase()
+
+let button=0
+let pre=0
+
+vehicles.forEach(v=>{
+
+if(v.vin && !v.vin.toLowerCase().includes(searchTerm)) return
+
+let age=(new Date()-new Date(v.turnin))/(1000*60*60*24)
+
+let rowClass = age>10 ? "old":""
+
+if(v.status==="waiting"){
+
+waitingTable.innerHTML+=`
+
+<tr class="${rowClass}">
+<td>${v.customer}</td>
+<td>${v.vin}</td>
+<td>${v.turnin}</td>
+<td>${v.location}</td>
+
+<td>
+
+<button onclick="markPicked(${v.id})">
+Picked Up
+</button>
+
+<button onclick="deleteVehicle(${v.id})">
+Delete
+</button>
+
+</td>
+
+</tr>
+`
+
+if(v.location==="Button") button++
+if(v.location==="Pre-Owned") pre++
+if(v.location==="Service") service++
+
+}
+
+else{
+
+pickedTable.innerHTML+=`
+
+<tr>
+<td>${v.customer}</td>
+<td>${v.vin}</td>
+<td>${v.turnin}</td>
+<td>${v.pickup}</td>
+<td>${v.location}</td>
+</tr>
+`
+
+}
+
+})
+
+buttonCount.innerText=button
+preCount.innerText=pre
+serviceCount.inner=service
+totalCount.innerText=button+pre+service
+
+}
+
+function showWaiting(){
+
+waitingSection.classList.remove("hidden")
+pickedSection.classList.add("hidden")
+
+}
+
+function showPicked(){
+
+pickedSection.classList.remove("hidden")
+waitingSection.classList.add("hidden")
+
+}
+
+
+function importExcel(){
+
+let file=excel.files[0]
+
+let reader=new FileReader()
+
+reader.onload=async function(e){
+
+let data=new Uint8Array(e.target.result)
+
+let workbook=XLSX.read(data,{type:"array"})
+
+let sheet=workbook.Sheets[workbook.SheetNames[0]]
+
+let rows=XLSX.utils.sheet_to_json(sheet)
+
+for(let r of rows){
+
+await db.from("vehicles").insert({
+
+customer:r.Customer,
+vin:r.VIN,
+turnin:r.TurnIn,
+location:r.Location,
+status:"waiting"
+
+})
+
+}
+
+loadVehicles()
+
+}
+
+reader.readAsArrayBuffer(file)
+
+}
+
+loadVehicles()
+
+</script>
+
 </body>
+
 </html>
