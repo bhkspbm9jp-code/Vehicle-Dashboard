@@ -1,375 +1,421 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Vehicle Pickup Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vehicle Pickup Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- Include XLSX for Excel import -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- XLSX library for Excel import -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  margin: 0;
-  padding: 20px;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
 
-/* Container for entire dashboard */
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
 
-/* Header title style */
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-/* Summary cards container */
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 30px;
-}
+    /* Summary cards styling */
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
 
-/* Individual card style */
-.card {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 200px;
-  text-align: center;
-}
+    .card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 180px;
+      text-align: center;
+    }
 
-/* Card title styling */
-.card h2 {
-  margin: 10px 0;
-  font-size: 36px;
-  color: #333;
-}
+    .card h2 {
+      margin: 10px 0;
+      font-size: 36px;
+      color: #333;
+    }
 
-/* Form section styling */
-.form-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
+    /* Form styling */
+    .form-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
 
-/* Input and select styling */
-input[type="text"], input[type="date"], select {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  width: 200px;
-}
+    .form-section input,
+    .form-section select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 200px;
+    }
 
-/* Buttons styling */
-button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 6px;
-  background-color: #2563eb;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s;
-}
+    .form-section button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
 
-button:hover {
-  background-color: #1f4e72;
-}
+    .form-section button:hover {
+      background-color: #1f4e72;
+    }
 
-/* Tables container */
-.tables {
-  margin-top: 20px;
-}
+    /* Toggle buttons */
+    .toggle-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-/* Table styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-}
+    .toggle-buttons button {
+      margin: 0 10px;
+      padding: 8px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
 
-thead {
-  background: #f1f3f5;
-}
+    .toggle-buttons button:hover {
+      background-color: #1f4e72;
+    }
 
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-}
+    /* Tables styling */
+    .tables {
+      margin-top: 20px;
+    }
 
-tr.old {
-  background-color: #ffe4e6;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
 
-.action-buttons button {
-  margin-right: 8px;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
+    thead {
+      background: #f1f3f5;
+    }
 
-.action-buttons button:hover {
-  opacity: 0.8;
-}
-</style>
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    tr.old {
+      background-color: #ffe4e6;
+    }
+
+    .action-buttons button {
+      margin-right: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-buttons button:hover {
+      opacity: 0.8;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="container">
+    <h1>Vehicle Pickup Dashboard</h1>
 
-<div class="container">
+    <!-- Summary Counts per Location -->
+    <div class="cards">
+      <div class="card">
+        Button
+        <h2 id="countButton">0</h2>
+      </div>
+      <div class="card">
+        Pre-Owned
+        <h2 id="countPreOwned">0</h2>
+      </div>
+      <div class="card">
+        Service
+        <h2 id="countService">0</h2>
+      </div>
+    </div>
 
-<h1>Vehicle Pickup Dashboard</h1>
+    <!-- Vehicle Addition Form -->
+    <div class="form-section">
+      <h2>Add Vehicle</h2>
+      <input type="text" id="make" placeholder="Make" />
+      <input type="text" id="model" placeholder="Model" />
+      <input type="text" id="customer" placeholder="Customer Last Name" />
+      <input type="text" id="vin" placeholder="VIN" />
+      <input type="date" id="turnin" />
+      <select id="location">
+        <option value="" disabled selected>Select Location</option>
+        <option>Button</option>
+        <option>Pre-Owned</option>
+        <option>Service</option>
+      </select>
+      <button onclick="addVehicle()">Add Vehicle</button>
+    </div>
 
-<!-- Summary Cards -->
-<div class="cards">
-  <div class="card">
-    <h2 id="vehicleCount">0</h2>
-    <div>Vehicle Count</div>
+    <!-- Import from Excel -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <button onclick="document.getElementById('excel').click()">Import Excel</button>
+      <input type="file" id="excel" style="display:none" onchange="importExcel()" />
+    </div>
+
+    <!-- Toggle Buttons for Waiting / Picked -->
+    <div class="toggle-buttons">
+      <button onclick="showWaiting()">Waiting</button>
+      <button onclick="showPicked()">Picked Up</button>
+    </div>
+
+    <!-- Waiting Vehicles Table -->
+    <div id="waitingSection">
+      <h3 style="text-align:center;">Waiting Vehicles</h3>
+      <div class="tables">
+        <table id="waitingTable">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>VIN</th>
+              <th>Turn In</th>
+              <th>Location</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Picked Vehicles Table -->
+    <div id="pickedSection" style="display:none;">
+      <h3 style="text-align:center;">Picked Up Vehicles</h3>
+      <div class="tables">
+        <table id="pickedTable">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>VIN</th>
+              <th>Turn In</th>
+              <th>Pickup</th>
+              <th>Location</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <h2 id="serviceCount">0</h2>
-    <div>Service Count</div>
-  </div>
-</div>
 
-<!-- Form for adding/importing vehicles -->
-<div class="form-section">
-  <input type="text" id="customer" placeholder="Customer Last Name">
-  <input type="text" id="vin" placeholder="VIN">
-  <input type="date" id="turnin">
-  <select id="location">
-    <option value="" disabled selected>Select Location</option>
-    <option>Button</option>
-    <option>Pre-Owned</option>
-    <option>Service</option>
-  </select>
-  <button onclick="addVehicle()">Add</button>
-  <input type="file" id="excel" style="display:none" onchange="importExcel()">
-  <button onclick="document.getElementById('excel').click()">Import Excel</button>
-</div>
+  <script>
+    // Replace these with your actual Supabase URL and Key
+    const SUPABASE_URL = "https://bcjcdddilcjbcmpstfix.supabase.co";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-<!-- Buttons to toggle views -->
-<div style="text-align:center; margin-bottom:20px;">
-  <button onclick="showWaiting()">Waiting</button>
-  <button onclick="showPicked()">Picked Up</button>
-</div>
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<!-- Waiting Vehicles Table -->
-<div id="waitingSection">
-  <h3 style="text-align:center;">Waiting Vehicles</h3>
-  <div class="tables">
-    <table id="waitingTable">
-      <thead>
-        <tr>
-          <th>Customer</th>
-          <th>VIN</th>
-          <th>Turn In</th>
-          <th>Location</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
+    let vehicles = [];
 
-<!-- Picked Up Vehicles Table -->
-<div id="pickedSection" style="display:none;">
-  <h3 style="text-align:center;">Picked Up Vehicles</h3>
-  <div class="tables">
-    <table id="pickedTable">
-      <thead>
-        <tr>
-          <th>Customer</th>
-          <th>VIN</th>
-          <th>Turn In</th>
-          <th>Pickup</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
-
-</div>
-
-<script>
-const SUPABASE_URL = "https://bcjcdddilcjbcmpstfix.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ogg53YFtX-817uwdhSKNaw_Oi7kCoya";
-
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let vehicles = [];
-
-async function loadVehicles() {
-  let { data } = await db.from("vehicles").select("*");
-  vehicles = data;
-  render();
-  getCounts();
-}
-
-function getCounts() {
-  let waitingCount = vehicles.filter(v => v.status === "waiting").length;
-  let pickedCount = vehicles.filter(v => v.status === "picked").length;
-  document.getElementById("vehicleCount").innerText = waitingCount;
-  document.getElementById("serviceCount").innerText = pickedCount;
-}
-
-async function addVehicle() {
-  const customer = document.getElementById("customer").value.trim();
-  const vin = document.getElementById("vin").value.trim();
-  const turnin = document.getElementById("turnin").value;
-  const location = document.getElementById("location").value;
-
-  if (!customer || !vin || !turnin || !location) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  await db.from("vehicles").insert({
-    customer,
-    vin,
-    turnin,
-    location,
-    status: "waiting"
-  });
-
-  document.getElementById("customer").value = "";
-  document.getElementById("vin").value = "";
-  document.getElementById("turnin").value = "";
-
-  loadVehicles();
-}
-
-async function markPicked(id) {
-  await db.from("vehicles").update({
-    status: "picked",
-    pickup: new Date().toISOString()
-  }).eq("id", id);
-  loadVehicles();
-}
-
-async function deleteVehicle(id) {
-  await db.from("vehicles").delete().eq("id", id);
-  loadVehicles();
-}
-
-function showWaiting() {
-  document.getElementById("waitingSection").style.display = "block";
-  document.getElementById("pickedSection").style.display = "none";
-}
-
-function showPicked() {
-  document.getElementById("waitingSection").style.display = "none";
-  document.getElementById("pickedSection").style.display = "block";
-}
-
-function render() {
-  const tbodyWaiting = document.querySelector("#waitingTable tbody");
-  const tbodyPicked = document.querySelector("#pickedTable tbody");
-  tbodyWaiting.innerHTML = "";
-  tbodyPicked.innerHTML = "";
-
-  const searchTerm = document.getElementById("search") ? document.getElementById("search").value.toLowerCase() : "";
-
-  let waitingCount = 0;
-  let pickedCount = 0;
-
-  for (let v of vehicles) {
-    if (searchTerm && !v.vin.toLowerCase().includes(searchTerm)) continue;
-
-    let ageDays = (new Date() - new Date(v.turnin)) / (1000 * 60 * 60 * 24);
-    let rowClass = ageDays > 10 ? "old" : "";
-
-    if (v.status === "waiting") {
-      tbodyWaiting.innerHTML += `
-        <tr class="${rowClass}">
-          <td>${v.customer}</td>
-          <td>${v.vin}</td>
-          <td>${v.turnin.slice(0,10)}</td>
-          <td>${v.location}</td>
-          <td class="action-buttons">
-            <button onclick="markPicked(${v.id})">Picked Up</button>
-            <button onclick="deleteVehicle(${v.id})">Delete</button>
-          </td>
-        </tr>`;
-      waitingCount++;
-    } else if (v.status === "picked") {
-      tbodyPicked.innerHTML += `
-        <tr>
-          <td>${v.customer}</td>
-          <td>${v.vin}</td>
-          <td>${v.turnin.slice(0,10)}</td>
-          <td>${v.pickup ? v.pickup.slice(0,10) : ""}</td>
-          <td>${v.location}</td>
-        </tr>`;
-      pickedCount++;
+    // Load vehicles from database
+    async function loadVehicles() {
+      const { data } = await supabase.from("vehicles").select("*");
+      vehicles = data;
+      render();
+      updateCounts();
     }
-  }
 
-  // Update counts
-  document.getElementById("vehicleCount").innerText = waitingCount;
-  document.getElementById("serviceCount").innerText = pickedCount;
-}
+    // Update counts per location
+    function updateCounts() {
+      const counts = {
+        'Button': 0,
+        'Pre-Owned': 0,
+        'Service': 0
+      };
+      for (const v of vehicles) {
+        if (v.status === 'waiting' && counts[v.location] !== undefined) {
+          counts[v.location]++;
+        }
+      }
+      document.getElementById('countButton').innerText = counts['Button'];
+      document.getElementById('countPreOwned').innerText = counts['Pre-Owned'];
+      document.getElementById('countService').innerText = counts['Service'];
+    }
 
-function showWaiting() {
-  document.getElementById("waitingSection").style.display = "block";
-  document.getElementById("pickedSection").style.display = "none";
-}
+    // Add a new vehicle
+    async function addVehicle() {
+      const make = document.getElementById('make').value.trim();
+      const model = document.getElementById('model').value.trim();
+      const customer = document.getElementById('customer').value.trim();
+      const vin = document.getElementById('vin').value.trim();
+      const turnin = document.getElementById('turnin').value;
+      const location = document.getElementById('location').value;
 
-function showPicked() {
-  document.getElementById("waitingSection").style.display = "none";
-  document.getElementById("pickedSection").style.display = "block";
-}
+      if (!make || !model || !customer || !vin || !turnin || !location) {
+        alert('Please fill all fields.');
+        return;
+      }
 
-async function importExcel() {
-  const fileInput = document.getElementById('excel');
-  const file = fileInput.files[0];
-  if (!file) {
-    alert("Please select an Excel file");
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-
-    for (let r of rows) {
-      await db.from("vehicles").insert({
-        customer: r.Customer,
-        vin: r.VIN,
-        turnin: r.TurnIn,
-        location: r.Location,
-        status: "waiting"
+      const { error } = await supabase.from('vehicles').insert({
+        make,
+        model,
+        customer,
+        vin,
+        turnin,
+        location,
+        status: 'waiting'
       });
+
+      if (error) {
+        console.error(error);
+        alert('Error adding vehicle.');
+      } else {
+        alert('Vehicle added successfully!');
+        document.getElementById('make').value = '';
+        document.getElementById('model').value = '';
+        document.getElementById('customer').value = '';
+        document.getElementById('vin').value = '';
+        document.getElementById('turnin').value = '';
+        loadVehicles();
+      }
     }
+
+    // Mark vehicle as picked up
+    async function markPicked(id) {
+      await supabase.from('vehicles').update({
+        status: 'picked',
+        pickup: new Date().toISOString()
+      }).eq('id', id);
+      loadVehicles();
+    }
+
+    // Delete vehicle
+    async function deleteVehicle(id) {
+      await supabase.from('vehicles').delete().eq('id', id);
+      loadVehicles();
+    }
+
+    // Show waiting section
+    function showWaiting() {
+      document.getElementById('waitingSection').style.display = 'block';
+      document.getElementById('pickedSection').style.display = 'none';
+    }
+
+    // Show picked section
+    function showPicked() {
+      document.getElementById('waitingSection').style.display = 'none';
+      document.getElementById('pickedSection').style.display = 'block';
+    }
+
+    // Render vehicles in tables
+    function render() {
+      const tbodyWaiting = document.querySelector('#waitingTable tbody');
+      const tbodyPicked = document.querySelector('#pickedTable tbody');
+
+      tbodyWaiting.innerHTML = '';
+      tbodyPicked.innerHTML = '';
+
+      const search = document.getElementById('search') ? document.getElementById('search').value.toLowerCase() : '';
+
+      for (const v of vehicles) {
+        if (search && !v.vin.toLowerCase().includes(search)) continue;
+
+        const ageDays = (new Date() - new Date(v.turnin)) / (1000 * 60 * 60 * 24);
+        const rowClass = ageDays > 10 ? 'old' : '';
+
+        if (v.status === 'waiting') {
+          tbodyWaiting.innerHTML += `
+            <tr class="${rowClass}">
+              <td>${v.customer}</td>
+              <td>${v.vin}</td>
+              <td>${v.turnin.slice(0,10)}</td>
+              <td>${v.location}</td>
+              <td>${v.make} ${v.model}</td>
+              <td class="action-buttons">
+                <button onclick="markPicked(${v.id})">Picked Up</button>
+                <button onclick="deleteVehicle(${v.id})">Delete</button>
+              </td>
+            </tr>`;
+        } else if (v.status === 'picked') {
+          tbodyPicked.innerHTML += `
+            <tr>
+              <td>${v.customer}</td>
+              <td>${v.vin}</td>
+              <td>${v.turnin.slice(0,10)}</td>
+              <td>${v.pickup ? v.pickup.slice(0,10) : ''}</td>
+              <td>${v.location}</td>
+              <td>${v.make} ${v.model}</td>
+            </tr>`;
+        }
+      }
+
+      updateCounts();
+    }
+
+    // Import vehicles from Excel
+    async function importExcel() {
+      const fileInput = document.getElementById('excel');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please select an Excel file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+        for (const r of rows) {
+          await supabase.from('vehicles').insert({
+            customer: r.Customer,
+            vin: r.VIN,
+            turnin: r.TurnIn,
+            location: r.Location,
+            make: r.Make || '',
+            model: r.Model || '',
+            status: 'waiting'
+          });
+        }
+        loadVehicles();
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Initial load
     loadVehicles();
-  };
-  reader.readAsArrayBuffer(file);
-}
 
-// Load data on page load
-loadVehicles();
-
-</script>
-
+    // Event listeners
+    document.querySelector('button[onclick="showWaiting()"]').addEventListener('click', showWaiting);
+    document.querySelector('button[onclick="showPicked()"]').addEventListener('click', showPicked);
+  </script>
 </body>
 </html>
